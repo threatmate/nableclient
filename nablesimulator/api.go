@@ -9,16 +9,16 @@ import (
 	"github.com/threatmate/restfulwrapper"
 )
 
-type AuthAPI struct {
+type API struct {
 	universe *Universe
 }
 
 type GetAuthMetadata struct {
 	restfulwrapper.HTTPMethodGET
-	_ string `api:"httppath:/"`
+	_ string `api:"httppath:/auth"`
 }
 
-func (a *AuthAPI) GetAuth(ctx context.Context, meta GetAuthMetadata) (output nableclient.GetAuthResponse, err error) {
+func (a *API) GetAuth(ctx context.Context, meta GetAuthMetadata) (output nableclient.GetAuthResponse, err error) {
 	output.Refresh = "/api/auth/refresh"
 	output.Validate = "/api/auth/validate"
 	output.Authenticate = "/api/auth/authenticate"
@@ -27,12 +27,12 @@ func (a *AuthAPI) GetAuth(ctx context.Context, meta GetAuthMetadata) (output nab
 
 type PostAuthAuthenticateMetadata struct {
 	restfulwrapper.HTTPMethodPOST
-	_             string `api:"httppath:/authenticate"`
+	_             string `api:"httppath:/auth/authenticate"`
 	Authorization string `api:"header:Authorization"`
 	Body          string `api:"body:consumes:*/*;empty"`
 }
 
-func (a *AuthAPI) PostAuthAuthenticate(ctx context.Context, meta PostAuthAuthenticateMetadata) (output nableclient.PostAuthAuthenticateResponse, err error) {
+func (a *API) PostAuthAuthenticate(ctx context.Context, meta PostAuthAuthenticateMetadata) (output nableclient.PostAuthAuthenticateResponse, err error) {
 	if meta.Authorization == "" {
 		return output, &APIError{code: http.StatusBadRequest, message: "[ID=4c141324-b42d-4103-9812-02c9c34b73a2] BAD REQUEST: MissingRequestHeaderException: Required request header 'Authorization' for method parameter type String is not present"}
 	}

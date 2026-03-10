@@ -8,7 +8,11 @@ import (
 )
 
 type Universe struct {
-	APIUsers []*APIUser
+	APIUsers    []*APIUser
+	ServiceOrgs []*nableclient.ServiceOrg
+	Users       []*nableclient.OrgUnitUser
+	Customers   []*nableclient.Customer
+	Devices     []*nableclient.Device
 }
 
 type APIUser struct {

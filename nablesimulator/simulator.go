@@ -17,19 +17,13 @@ type Simulator struct {
 	universe Universe
 }
 
-type API struct {
-	AuthAPI AuthAPI `api:"httppath:/auth"`
-}
-
 func New(ctx context.Context) *Simulator {
 	s := &Simulator{
 		universe: Universe{},
 	}
 
 	api := &API{
-		AuthAPI: AuthAPI{
-			universe: &s.universe,
-		},
+		universe: &s.universe,
 	}
 
 	container := restful.NewContainer()
