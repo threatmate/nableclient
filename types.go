@@ -5,6 +5,13 @@ import (
 	"time"
 )
 
+type GenericResult[T any] struct {
+	Data  T `json:"data"`
+	Links struct {
+	} `json:"_links"`
+	Warning any `json:"_warning"`
+}
+
 type GenericPage[T any] struct {
 	Data       []T `json:"data"`
 	PageNumber int `json:"pageNumber"`
