@@ -1,0 +1,52 @@
+package nablesimulator
+
+import (
+	"context"
+	"net/http"
+	"strings"
+
+	"github.com/threatmate/nableclient"
+	"github.com/threatmate/restfulwrapper"
+)
+
+type AuthAPI struct {
+	universe *Universe
+}
+
+type GetAuthMetadata struct {
+	restfulwrapper.HTTPMethodGET
+	_ string `api:"httppath:/"`
+}
+
+func (a *AuthAPI) GetAuth(ctx context.Context, meta GetAuthMetadata) (output nableclient.GetAuthResponse, err error) {
+	output.Refresh = "/api/auth/refresh"
+	output.Validate = "/api/auth/validate"
+	output.Authenticate = "/api/auth/authenticate"
+	return output, nil
+}
+
+type PostAuthAuthenticateMetadata struct {
+	restfulwrapper.HTTPMethodPOST
+	_             string `api:"httppath:/authenticate"`
+	Authorization string `api:"header:Authorization"`
+	Body          string `api:"body:consumes:*/*;empty"`
+}
+
+func (a *AuthAPI) PostAuthAuthenticate(ctx context.Context, meta PostAuthAuthenticateMetadata) (output nableclient.PostAuthAuthenticateResponse, err error) {
+	if meta.Authorization == "" {
+		return output, &APIError{code: http.StatusBadRequest, message: "[ID=4c141324-b42d-4103-9812-02c9c34b73a2] BAD REQUEST: MissingRequestHeaderException: Required request header 'Authorization' for method parameter type String is not present"}
+	}
+	if !strings.HasPrefix(meta.Authorization, "Bearer ") {
+		return output, &APIError{code: http.StatusInternalServerError, message: "[ID=ef8c01bd-3b98-4b8c-9ccf-ef1e873c6954] INTERNAL SERVER ERROR: AuthException: Authentication header is malformed or unsupported."}
+	}
+	apiKey := strings.TrimPrefix(meta.Authorization, "Bearer ")
+
+	for _, apiUser := range a.universe.APIUsers {
+		response, err := apiUser.AuthenticateAPIKey(apiKey)
+		if err == nil {
+			return response, err
+		}
+	}
+
+	return output, &APIError{code: http.StatusUnauthorized, message: "UNAUTHORIZED: DmsLoginException: Login failed. Unable to obtain the login sessionId. status=500 DMS=DmsProperties [protocol=http, host=localhost, dmsPort=8080, loginPort=81], request=DmsHttpRequest [method=POST, endpoint=dms/rest/login, contentType=null]"}
+}
