@@ -23,7 +23,7 @@ type Device struct {
 	DeviceClassLabel         string   `json:"deviceClassLabel"`
 	SupportedOSLabel         string   `json:"supportedOsLabel"`
 	LastLoggedInUser         string   `json:"lastLoggedInUser"`
-	StillLoggedIn            bool     `json:"stillLoggedIn"`
+	StillLoggedIn            string   `json:"stillLoggedIn"`
 	LicenseMode              string   `json:"licenseMode"`
 	OrgUnitID                int      `json:"orgUnitId"`
 	SOID                     int      `json:"soId"`
