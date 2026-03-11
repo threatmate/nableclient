@@ -50,3 +50,25 @@ func (a *API) PostAuthAuthenticate(ctx context.Context, meta PostAuthAuthenticat
 
 	return output, &APIError{code: http.StatusUnauthorized, message: "UNAUTHORIZED: DmsLoginException: Login failed. Unable to obtain the login sessionId. status=500 DMS=DmsProperties [protocol=http, host=localhost, dmsPort=8080, loginPort=81], request=DmsHttpRequest [method=POST, endpoint=dms/rest/login, contentType=null]"}
 }
+
+type requireAuthentication struct {
+	CurrentUser APIUser `api:"custom.currentUser"`
+}
+
+type GetServiceOrgsMetadata struct {
+	restfulwrapper.HTTPMethodGET
+	requireAuthentication
+	_ string `api:"httppath:/service-orgs"`
+}
+
+func (a *API) GetServiceOrgs(ctx context.Context, meta GetServiceOrgsMetadata) (output nableclient.GetServiceOrgsResponse, err error) {
+	for _, serviceOrg := range a.universe.ServiceOrgs {
+		output.Data = append(output.Data, *serviceOrg)
+	}
+	output.ItemCount = len(output.Data)
+	output.TotalItems = len(output.Data)
+	output.TotalPages = 1
+	output.PageNumber = 1
+	output.PageSize = len(output.Data)
+	return output, nil
+}

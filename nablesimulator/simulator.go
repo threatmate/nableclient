@@ -32,7 +32,7 @@ func New(ctx context.Context) *Simulator {
 			Consumes(restful.MIME_JSON).
 			Produces(restful.MIME_JSON)
 		{
-			ws := restfulAPI.Session()
+			ws := restfulAPI.Session().Do(handleAuthentication(&s.universe))
 			ws.Register(ctx, "/", api)
 		}
 		container.Add(restfulAPI.WebService())

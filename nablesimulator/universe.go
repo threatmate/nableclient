@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/threatmate/nableclient"
 )
 
@@ -34,14 +35,14 @@ func (u *APIUser) AuthenticateAPIKey(apiKey string) (output nableclient.PostAuth
 	}
 
 	accessToken := APIUserToken{
-		Token:     "access_token",
+		Token:     uuid.New().String(),
 		Type:      "Bearer",
 		ExpiresAt: time.Now().Add(1 * time.Hour),
 	}
 	u.accessTokens = append(u.accessTokens, accessToken)
 
 	refreshToken := APIUserToken{
-		Token:     "refresh_token",
+		Token:     uuid.New().String(),
 		Type:      "Bearer",
 		ExpiresAt: time.Now().Add(1 * time.Hour),
 	}

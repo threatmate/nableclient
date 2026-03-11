@@ -26,6 +26,12 @@ func TestSimulator(t *testing.T) {
 			APIKey:   "admin-key-1",
 		},
 	}
+	simulator.Universe().ServiceOrgs = []*nableclient.ServiceOrg{
+		{
+			SOID:   "1",
+			SOName: "Service Org 1",
+		},
+	}
 
 	t.Run("auth", func(t *testing.T) {
 		client := nableclient.New(simulator.URL())
@@ -48,6 +54,20 @@ func TestSimulator(t *testing.T) {
 
 			err := client.Authenticate(ctx, "admin-key-1")
 			require.NoError(t, err)
+		})
+	})
+	t.Run("Authenticated", func(t *testing.T) {
+		client := nableclient.New(simulator.URL())
+		err := client.Authenticate(ctx, "admin-key-1")
+		require.NoError(t, err)
+
+		t.Run("service-orgs", func(t *testing.T) {
+			serviceOrgs, err := client.GetServiceOrgs(ctx)
+			require.NoError(t, err)
+			if assert.Equal(t, 1, len(serviceOrgs)) {
+				assert.Equal(t, "1", serviceOrgs[0].SOID)
+				assert.Equal(t, "Service Org 1", serviceOrgs[0].SOName)
+			}
 		})
 	})
 }
