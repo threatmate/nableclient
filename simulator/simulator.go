@@ -62,14 +62,6 @@ type ErrorResponse struct {
 	Message string `json:"message"`
 }
 
-func NewErrorResponse(r *http.Request, code int, message string) ErrorResponse {
-	response := ErrorResponse{
-		Status:  code,
-		Message: message,
-	}
-	return response
-}
-
 // Close shuts down the simulator.
 func (s *Simulator) Close() {
 	if s.server != nil {
