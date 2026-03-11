@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/threatmate/restapiclient"
 )
@@ -26,10 +27,14 @@ type Client struct {
 }
 
 // New creates a new client for the n-able REST API.
+//
+// The default HTTP client under the hood will have a 1-minute timeout.
 func New(baseURL string, opts ...ClientOption) *Client {
 	config := Config{
-		BaseURL:    baseURL,
-		HTTPClient: &http.Client{},
+		BaseURL: baseURL,
+		HTTPClient: &http.Client{
+			Timeout: 1 * time.Minute,
+		},
 	}
 
 	for _, opt := range opts {

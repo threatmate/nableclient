@@ -2,6 +2,7 @@ package simulator
 
 import (
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/google/uuid"
@@ -29,6 +30,7 @@ type Device struct {
 type APIUser struct {
 	Username      string
 	APIKey        string
+	lock          sync.Mutex
 	accessTokens  []APIUserToken
 	refreshTokens []APIUserToken
 }
@@ -43,6 +45,9 @@ func (u *APIUser) AuthenticateAPIKey(apiKey string) (output ncentralclient.PostA
 	if apiKey != u.APIKey {
 		return output, fmt.Errorf("invalid API key")
 	}
+
+	u.lock.Lock()
+	defer u.lock.Unlock()
 
 	accessToken := APIUserToken{
 		Token:     uuid.New().String(),

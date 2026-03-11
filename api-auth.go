@@ -52,6 +52,9 @@ func (c *Client) Authenticate(ctx context.Context, apiKey string) error {
 		restapiclient.OptionHeader("Authorization", "Bearer "+apiKey),
 	)
 	if err != nil {
+		c.lock.Lock()
+		c.accessToken = "" // Zero out the access token on failure.
+		c.lock.Unlock()
 		return fmt.Errorf("authenticate: %w", err)
 	}
 

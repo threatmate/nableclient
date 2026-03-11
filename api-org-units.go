@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"net/url"
 )
 
 type GetOrgUnitsIDUsersResponse GenericPage[OrgUnitUser]
@@ -33,7 +34,7 @@ type OrgUnitUser struct {
 func (c *Client) GetOrgUnitsIDUsers(ctx context.Context, orgUnitID string) ([]OrgUnitUser, error) {
 	output := []OrgUnitUser{}
 
-	pageURL := "/api/org-units/" + orgUnitID + "/users"
+	pageURL := "/api/org-units/" + url.PathEscape(orgUnitID) + "/users"
 	for {
 		var response GetOrgUnitsIDUsersResponse
 		err := c.Do(ctx, http.MethodGet, pageURL, nil, &response)

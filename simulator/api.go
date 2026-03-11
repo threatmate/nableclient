@@ -53,7 +53,7 @@ func (a *API) PostAuthAuthenticate(ctx context.Context, meta PostAuthAuthenticat
 }
 
 type requireAuthentication struct {
-	CurrentUser APIUser `api:"custom.currentUser"`
+	CurrentUser CurrentUser `api:"custom.currentUser"`
 }
 
 type GetServiceOrgsMetadata struct {

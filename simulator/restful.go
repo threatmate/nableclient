@@ -19,11 +19,16 @@ const (
 	ContextKeyCurrentUser ContextKey = "currentUser"
 )
 
+// CurrentUser is the current user in the context.
+type CurrentUser struct {
+	Username string
+}
+
 func init() {
 	restfulwrapper.Register("custom.currentUser", func(apiTagValue string, field reflect.StructField, info *restfulwrapper.RestfulFunctionInfo) (restfulwrapper.InputFieldFunction, error) {
 		switch field.Type.String() {
-		case "ncentralsimulator.APIUser":
-		case "*ncentralsimulator.APIUser":
+		case "ncentralsimulator.CurrentUser":
+		case "*ncentralsimulator.CurrentUser":
 		default:
 			return nil, fmt.Errorf("bad type for field %s: %s", field.Name, field.Type.String())
 		}
@@ -36,11 +41,11 @@ func init() {
 				return restfulwrapper.NewAPIResponseError(http.StatusUnauthorized, "Unauthorized")
 			}
 
-			currentUser := contextValue.(*APIUser)
+			currentUser := contextValue.(*CurrentUser)
 			switch v.Interface().(type) {
-			case APIUser:
+			case CurrentUser:
 				v.Set(reflect.ValueOf(*currentUser))
-			case *APIUser:
+			case *CurrentUser:
 				v.Set(reflect.ValueOf(currentUser))
 			default:
 				return restfulwrapper.NewAPIResponseError(http.StatusInternalServerError, fmt.Sprintf("Bad type for field %s", field.Name))
@@ -63,7 +68,9 @@ func handleAuthentication(universe *Universe) func(builder *restful.RouteBuilder
 						if accessToken.Token == apiKey && accessToken.ExpiresAt.After(time.Now()) {
 							slog.InfoContext(req.Request.Context(), "Found API user", "API User", apiUser.Username)
 							ctx := req.Request.Context()
-							ctx = context.WithValue(ctx, ContextKeyCurrentUser, apiUser)
+							ctx = context.WithValue(ctx, ContextKeyCurrentUser, CurrentUser{
+								Username: apiUser.Username,
+							})
 							req.Request = req.Request.WithContext(ctx)
 							break
 						}
