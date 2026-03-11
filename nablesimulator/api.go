@@ -2,6 +2,7 @@ package nablesimulator
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -99,13 +100,31 @@ type GetDevicesMetadata struct {
 
 func (a *API) GetDevices(ctx context.Context, meta GetDevicesMetadata) (output nableclient.GetDevicesResponse, err error) {
 	for _, device := range a.universe.Devices {
-		output.Data = append(output.Data, *device)
+		output.Data = append(output.Data, *device.Device)
 	}
 	output.ItemCount = len(output.Data)
 	output.TotalItems = len(output.Data)
 	output.TotalPages = 1
 	output.PageNumber = 1
 	output.PageSize = len(output.Data)
+	return output, nil
+}
+
+type GetDevicesIDAssetsMetadata struct {
+	restfulwrapper.HTTPMethodGET
+	requireAuthentication
+	_        string `api:"httppath:/devices/{deviceID}/assets"`
+	DeviceID string `api:"path:deviceID"`
+}
+
+func (a *API) GetDevicesIDAssets(ctx context.Context, meta GetDevicesIDAssetsMetadata) (output nableclient.GetDevicesIDAssetsResponse, err error) {
+	for _, device := range a.universe.Devices {
+		if fmt.Sprintf("%d", device.Device.DeviceID) != meta.DeviceID {
+			continue
+		}
+		output.Data = *device.Asset
+		break
+	}
 	return output, nil
 }
 

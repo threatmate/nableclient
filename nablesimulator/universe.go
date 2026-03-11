@@ -13,12 +13,17 @@ type Universe struct {
 	ServiceOrgs []*nableclient.ServiceOrg
 	OrgUnits    []*OrgUnit
 	Customers   []*nableclient.Customer
-	Devices     []*nableclient.Device
+	Devices     []*Device
 }
 
 type OrgUnit struct {
 	OrgUnitID string
 	Users     []*nableclient.OrgUnitUser
+}
+
+type Device struct {
+	Device *nableclient.Device
+	Asset  *nableclient.DeviceAsset
 }
 
 type APIUser struct {

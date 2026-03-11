@@ -49,10 +49,13 @@ func TestSimulator(t *testing.T) {
 			CustomerName: "Customer 1",
 		},
 	}
-	simulator.Universe().Devices = []*nableclient.Device{
+	simulator.Universe().Devices = []*nablesimulator.Device{
 		{
-			DeviceID: 1,
-			LongName: "Device 1",
+			Device: &nableclient.Device{
+				DeviceID: 1,
+				LongName: "Device 1",
+			},
+			Asset: &nableclient.DeviceAsset{},
 		},
 	}
 
@@ -115,6 +118,12 @@ func TestSimulator(t *testing.T) {
 			if assert.Equal(t, 1, len(devices)) {
 				assert.Equal(t, 1, devices[0].DeviceID)
 				assert.Equal(t, "Device 1", devices[0].LongName)
+
+				t.Run("assets", func(t *testing.T) {
+					assets, err := client.GetDevicesIDAssets(ctx, devices[0].DeviceID)
+					require.NoError(t, err)
+					_ = assets
+				})
 			}
 		})
 	})
