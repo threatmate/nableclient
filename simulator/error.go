@@ -1,4 +1,4 @@
-package nablesimulator
+package simulator
 
 import (
 	"github.com/emicklei/go-restful/v3"

@@ -1,4 +1,4 @@
-package nablesimulator
+package simulator
 
 import (
 	"context"

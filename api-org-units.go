@@ -1,4 +1,4 @@
-package nableclient
+package ncentralclient
 
 import (
 	"context"

@@ -1,4 +1,4 @@
-package nablesimulator
+package simulator
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/threatmate/nableclient"
+	"github.com/threatmate/ncentralclient"
 	"github.com/threatmate/restfulwrapper"
 )
 
@@ -19,7 +19,7 @@ type GetAuthMetadata struct {
 	_ string `api:"httppath:/auth"`
 }
 
-func (a *API) GetAuth(ctx context.Context, meta GetAuthMetadata) (output nableclient.GetAuthResponse, err error) {
+func (a *API) GetAuth(ctx context.Context, meta GetAuthMetadata) (output ncentralclient.GetAuthResponse, err error) {
 	output.Refresh = "/api/auth/refresh"
 	output.Validate = "/api/auth/validate"
 	output.Authenticate = "/api/auth/authenticate"
@@ -33,7 +33,7 @@ type PostAuthAuthenticateMetadata struct {
 	Body          string `api:"body:consumes:*/*;empty"`
 }
 
-func (a *API) PostAuthAuthenticate(ctx context.Context, meta PostAuthAuthenticateMetadata) (output nableclient.PostAuthAuthenticateResponse, err error) {
+func (a *API) PostAuthAuthenticate(ctx context.Context, meta PostAuthAuthenticateMetadata) (output ncentralclient.PostAuthAuthenticateResponse, err error) {
 	if meta.Authorization == "" {
 		return output, &APIError{code: http.StatusBadRequest, message: "[ID=4c141324-b42d-4103-9812-02c9c34b73a2] BAD REQUEST: MissingRequestHeaderException: Required request header 'Authorization' for method parameter type String is not present"}
 	}
@@ -62,7 +62,7 @@ type GetServiceOrgsMetadata struct {
 	_ string `api:"httppath:/service-orgs"`
 }
 
-func (a *API) GetServiceOrgs(ctx context.Context, meta GetServiceOrgsMetadata) (output nableclient.GetServiceOrgsResponse, err error) {
+func (a *API) GetServiceOrgs(ctx context.Context, meta GetServiceOrgsMetadata) (output ncentralclient.GetServiceOrgsResponse, err error) {
 	for _, serviceOrg := range a.universe.ServiceOrgs {
 		output.Data = append(output.Data, *serviceOrg)
 	}
@@ -80,7 +80,7 @@ type GetCustomersMetadata struct {
 	_ string `api:"httppath:/customers"`
 }
 
-func (a *API) GetCustomers(ctx context.Context, meta GetCustomersMetadata) (output nableclient.GetCustomersResponse, err error) {
+func (a *API) GetCustomers(ctx context.Context, meta GetCustomersMetadata) (output ncentralclient.GetCustomersResponse, err error) {
 	for _, customer := range a.universe.Customers {
 		output.Data = append(output.Data, *customer)
 	}
@@ -98,7 +98,7 @@ type GetDevicesMetadata struct {
 	_ string `api:"httppath:/devices"`
 }
 
-func (a *API) GetDevices(ctx context.Context, meta GetDevicesMetadata) (output nableclient.GetDevicesResponse, err error) {
+func (a *API) GetDevices(ctx context.Context, meta GetDevicesMetadata) (output ncentralclient.GetDevicesResponse, err error) {
 	for _, device := range a.universe.Devices {
 		output.Data = append(output.Data, *device.Device)
 	}
@@ -117,7 +117,7 @@ type GetDevicesIDAssetsMetadata struct {
 	DeviceID string `api:"path:deviceID"`
 }
 
-func (a *API) GetDevicesIDAssets(ctx context.Context, meta GetDevicesIDAssetsMetadata) (output nableclient.GetDevicesIDAssetsResponse, err error) {
+func (a *API) GetDevicesIDAssets(ctx context.Context, meta GetDevicesIDAssetsMetadata) (output ncentralclient.GetDevicesIDAssetsResponse, err error) {
 	for _, device := range a.universe.Devices {
 		if fmt.Sprintf("%d", device.Device.DeviceID) != meta.DeviceID {
 			continue
@@ -135,7 +135,7 @@ type GetOrgUnitsIDUsersMetadata struct {
 	OrgUnitID string `api:"path:orgUnitID"`
 }
 
-func (a *API) GetOrgUnitsIDUsers(ctx context.Context, meta GetOrgUnitsIDUsersMetadata) (output nableclient.GetOrgUnitsIDUsersResponse, err error) {
+func (a *API) GetOrgUnitsIDUsers(ctx context.Context, meta GetOrgUnitsIDUsersMetadata) (output ncentralclient.GetOrgUnitsIDUsersResponse, err error) {
 	for _, orgUnit := range a.universe.OrgUnits {
 		if orgUnit.OrgUnitID != meta.OrgUnitID {
 			continue

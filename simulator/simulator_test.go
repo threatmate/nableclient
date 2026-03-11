@@ -1,4 +1,4 @@
-package nablesimulator_test
+package simulator_test
 
 import (
 	"log/slog"
@@ -8,8 +8,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/tekkamanendless/httperror"
-	"github.com/threatmate/nableclient"
-	"github.com/threatmate/nableclient/nablesimulator"
+	"github.com/threatmate/ncentralclient"
+	"github.com/threatmate/ncentralclient/simulator"
 )
 
 func TestSimulator(t *testing.T) {
@@ -17,25 +17,25 @@ func TestSimulator(t *testing.T) {
 
 	ctx := t.Context()
 
-	simulator := nablesimulator.New(ctx)
-	defer simulator.Close()
+	sim := simulator.New(ctx)
+	defer sim.Close()
 
-	simulator.Universe().APIUsers = []*nablesimulator.APIUser{
+	sim.Universe().APIUsers = []*simulator.APIUser{
 		{
 			Username: "admin@example.com",
 			APIKey:   "admin-key-1",
 		},
 	}
-	simulator.Universe().ServiceOrgs = []*nableclient.ServiceOrg{
+	sim.Universe().ServiceOrgs = []*ncentralclient.ServiceOrg{
 		{
 			SOID:   "1",
 			SOName: "Service Org 1",
 		},
 	}
-	simulator.Universe().OrgUnits = []*nablesimulator.OrgUnit{
+	sim.Universe().OrgUnits = []*simulator.OrgUnit{
 		{
 			OrgUnitID: "1",
-			Users: []*nableclient.OrgUnitUser{
+			Users: []*ncentralclient.OrgUnitUser{
 				{
 					UserID:   1,
 					UserName: "User 1",
@@ -43,24 +43,24 @@ func TestSimulator(t *testing.T) {
 			},
 		},
 	}
-	simulator.Universe().Customers = []*nableclient.Customer{
+	sim.Universe().Customers = []*ncentralclient.Customer{
 		{
 			CustomerID:   "1",
 			CustomerName: "Customer 1",
 		},
 	}
-	simulator.Universe().Devices = []*nablesimulator.Device{
+	sim.Universe().Devices = []*simulator.Device{
 		{
-			Device: &nableclient.Device{
+			Device: &ncentralclient.Device{
 				DeviceID: 1,
 				LongName: "Device 1",
 			},
-			Asset: &nableclient.DeviceAsset{},
+			Asset: &ncentralclient.DeviceAsset{},
 		},
 	}
 
 	t.Run("auth", func(t *testing.T) {
-		client := nableclient.New(simulator.URL())
+		client := ncentralclient.New(sim.URL())
 
 		output, err := client.GetAuth(ctx)
 		require.NoError(t, err)
@@ -70,20 +70,20 @@ func TestSimulator(t *testing.T) {
 	})
 	t.Run("auth/authenticate", func(t *testing.T) {
 		t.Run("Bogus API key", func(t *testing.T) {
-			client := nableclient.New(simulator.URL())
+			client := ncentralclient.New(sim.URL())
 
 			err := client.Authenticate(ctx, "bogus")
 			require.ErrorIs(t, err, httperror.ErrStatusUnauthorized)
 		})
 		t.Run("Valid API key", func(t *testing.T) {
-			client := nableclient.New(simulator.URL())
+			client := ncentralclient.New(sim.URL())
 
 			err := client.Authenticate(ctx, "admin-key-1")
 			require.NoError(t, err)
 		})
 	})
 	t.Run("Authenticated", func(t *testing.T) {
-		client := nableclient.New(simulator.URL())
+		client := ncentralclient.New(sim.URL())
 		err := client.Authenticate(ctx, "admin-key-1")
 		require.NoError(t, err)
 

@@ -1,29 +1,29 @@
-package nablesimulator
+package simulator
 
 import (
 	"fmt"
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/threatmate/nableclient"
+	"github.com/threatmate/ncentralclient"
 )
 
 type Universe struct {
 	APIUsers    []*APIUser
-	ServiceOrgs []*nableclient.ServiceOrg
+	ServiceOrgs []*ncentralclient.ServiceOrg
 	OrgUnits    []*OrgUnit
-	Customers   []*nableclient.Customer
+	Customers   []*ncentralclient.Customer
 	Devices     []*Device
 }
 
 type OrgUnit struct {
 	OrgUnitID string
-	Users     []*nableclient.OrgUnitUser
+	Users     []*ncentralclient.OrgUnitUser
 }
 
 type Device struct {
-	Device *nableclient.Device
-	Asset  *nableclient.DeviceAsset
+	Device *ncentralclient.Device
+	Asset  *ncentralclient.DeviceAsset
 }
 
 type APIUser struct {
@@ -39,7 +39,7 @@ type APIUserToken struct {
 	ExpiresAt time.Time
 }
 
-func (u *APIUser) AuthenticateAPIKey(apiKey string) (output nableclient.PostAuthAuthenticateResponse, err error) {
+func (u *APIUser) AuthenticateAPIKey(apiKey string) (output ncentralclient.PostAuthAuthenticateResponse, err error) {
 	if apiKey != u.APIKey {
 		return output, fmt.Errorf("invalid API key")
 	}
@@ -58,12 +58,12 @@ func (u *APIUser) AuthenticateAPIKey(apiKey string) (output nableclient.PostAuth
 	}
 	u.refreshTokens = append(u.refreshTokens, refreshToken)
 
-	output.Tokens.Access = nableclient.PostAuthAuthenticateResponseToken{
+	output.Tokens.Access = ncentralclient.PostAuthAuthenticateResponseToken{
 		Token:         accessToken.Token,
 		Type:          accessToken.Type,
 		ExpirySeconds: int(time.Until(accessToken.ExpiresAt).Seconds()),
 	}
-	output.Tokens.Refresh = nableclient.PostAuthAuthenticateResponseToken{
+	output.Tokens.Refresh = ncentralclient.PostAuthAuthenticateResponseToken{
 		Token:         refreshToken.Token,
 		Type:          refreshToken.Type,
 		ExpirySeconds: int(time.Until(refreshToken.ExpiresAt).Seconds()),

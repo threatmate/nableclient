@@ -1,4 +1,4 @@
-module github.com/threatmate/nableclient
+module github.com/threatmate/ncentralclient
 
 go 1.25.4
 

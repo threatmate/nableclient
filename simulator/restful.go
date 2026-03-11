@@ -1,4 +1,4 @@
-package nablesimulator
+package simulator
 
 import (
 	"context"
@@ -22,8 +22,8 @@ const (
 func init() {
 	restfulwrapper.Register("custom.currentUser", func(apiTagValue string, field reflect.StructField, info *restfulwrapper.RestfulFunctionInfo) (restfulwrapper.InputFieldFunction, error) {
 		switch field.Type.String() {
-		case "nablesimulator.APIUser":
-		case "*nablesimulator.APIUser":
+		case "ncentralsimulator.APIUser":
+		case "*ncentralsimulator.APIUser":
 		default:
 			return nil, fmt.Errorf("bad type for field %s: %s", field.Name, field.Type.String())
 		}
