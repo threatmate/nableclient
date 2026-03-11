@@ -11,9 +11,14 @@ import (
 type Universe struct {
 	APIUsers    []*APIUser
 	ServiceOrgs []*nableclient.ServiceOrg
-	Users       []*nableclient.OrgUnitUser
+	OrgUnits    []*OrgUnit
 	Customers   []*nableclient.Customer
 	Devices     []*nableclient.Device
+}
+
+type OrgUnit struct {
+	OrgUnitID string
+	Users     []*nableclient.OrgUnitUser
 }
 
 type APIUser struct {

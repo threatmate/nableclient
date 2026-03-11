@@ -32,6 +32,29 @@ func TestSimulator(t *testing.T) {
 			SOName: "Service Org 1",
 		},
 	}
+	simulator.Universe().OrgUnits = []*nablesimulator.OrgUnit{
+		{
+			OrgUnitID: "1",
+			Users: []*nableclient.OrgUnitUser{
+				{
+					UserID:   1,
+					UserName: "User 1",
+				},
+			},
+		},
+	}
+	simulator.Universe().Customers = []*nableclient.Customer{
+		{
+			CustomerID:   "1",
+			CustomerName: "Customer 1",
+		},
+	}
+	simulator.Universe().Devices = []*nableclient.Device{
+		{
+			DeviceID: 1,
+			LongName: "Device 1",
+		},
+	}
 
 	t.Run("auth", func(t *testing.T) {
 		client := nableclient.New(simulator.URL())
@@ -67,6 +90,31 @@ func TestSimulator(t *testing.T) {
 			if assert.Equal(t, 1, len(serviceOrgs)) {
 				assert.Equal(t, "1", serviceOrgs[0].SOID)
 				assert.Equal(t, "Service Org 1", serviceOrgs[0].SOName)
+
+				t.Run("service-orgs", func(t *testing.T) {
+					users, err := client.GetOrgUnitsIDUsers(ctx, serviceOrgs[0].SOID)
+					require.NoError(t, err)
+					if assert.Equal(t, 1, len(users)) {
+						assert.Equal(t, 1, users[0].UserID)
+						assert.Equal(t, "User 1", users[0].UserName)
+					}
+				})
+			}
+		})
+		t.Run("customers", func(t *testing.T) {
+			customers, err := client.GetCustomers(ctx)
+			require.NoError(t, err)
+			if assert.Equal(t, 1, len(customers)) {
+				assert.Equal(t, "1", customers[0].CustomerID)
+				assert.Equal(t, "Customer 1", customers[0].CustomerName)
+			}
+		})
+		t.Run("devices", func(t *testing.T) {
+			devices, err := client.GetDevices(ctx)
+			require.NoError(t, err)
+			if assert.Equal(t, 1, len(devices)) {
+				assert.Equal(t, 1, devices[0].DeviceID)
+				assert.Equal(t, "Device 1", devices[0].LongName)
 			}
 		})
 	})

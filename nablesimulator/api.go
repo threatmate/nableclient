@@ -72,3 +72,64 @@ func (a *API) GetServiceOrgs(ctx context.Context, meta GetServiceOrgsMetadata) (
 	output.PageSize = len(output.Data)
 	return output, nil
 }
+
+type GetCustomersMetadata struct {
+	restfulwrapper.HTTPMethodGET
+	requireAuthentication
+	_ string `api:"httppath:/customers"`
+}
+
+func (a *API) GetCustomers(ctx context.Context, meta GetCustomersMetadata) (output nableclient.GetCustomersResponse, err error) {
+	for _, customer := range a.universe.Customers {
+		output.Data = append(output.Data, *customer)
+	}
+	output.ItemCount = len(output.Data)
+	output.TotalItems = len(output.Data)
+	output.TotalPages = 1
+	output.PageNumber = 1
+	output.PageSize = len(output.Data)
+	return output, nil
+}
+
+type GetDevicesMetadata struct {
+	restfulwrapper.HTTPMethodGET
+	requireAuthentication
+	_ string `api:"httppath:/devices"`
+}
+
+func (a *API) GetDevices(ctx context.Context, meta GetDevicesMetadata) (output nableclient.GetDevicesResponse, err error) {
+	for _, device := range a.universe.Devices {
+		output.Data = append(output.Data, *device)
+	}
+	output.ItemCount = len(output.Data)
+	output.TotalItems = len(output.Data)
+	output.TotalPages = 1
+	output.PageNumber = 1
+	output.PageSize = len(output.Data)
+	return output, nil
+}
+
+type GetOrgUnitsIDUsersMetadata struct {
+	restfulwrapper.HTTPMethodGET
+	requireAuthentication
+	_         string `api:"httppath:/org-units/{orgUnitID}/users"`
+	OrgUnitID string `api:"path:orgUnitID"`
+}
+
+func (a *API) GetOrgUnitsIDUsers(ctx context.Context, meta GetOrgUnitsIDUsersMetadata) (output nableclient.GetOrgUnitsIDUsersResponse, err error) {
+	for _, orgUnit := range a.universe.OrgUnits {
+		if orgUnit.OrgUnitID != meta.OrgUnitID {
+			continue
+		}
+		for _, user := range orgUnit.Users {
+			output.Data = append(output.Data, *user)
+		}
+		break
+	}
+	output.ItemCount = len(output.Data)
+	output.TotalItems = len(output.Data)
+	output.TotalPages = 1
+	output.PageNumber = 1
+	output.PageSize = len(output.Data)
+	return output, nil
+}
