@@ -68,7 +68,7 @@ func handleAuthentication(universe *Universe) func(builder *restful.RouteBuilder
 						if accessToken.Token == apiKey && accessToken.ExpiresAt.After(time.Now()) {
 							slog.InfoContext(req.Request.Context(), "Found API user", "API User", apiUser.Username)
 							ctx := req.Request.Context()
-							ctx = context.WithValue(ctx, ContextKeyCurrentUser, CurrentUser{
+							ctx = context.WithValue(ctx, ContextKeyCurrentUser, &CurrentUser{
 								Username: apiUser.Username,
 							})
 							req.Request = req.Request.WithContext(ctx)
