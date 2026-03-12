@@ -1,2 +1,3 @@
-# template
-Generic template for repos in the `threatmate` organization.
+# N-central Client
+This is a Go client for the N-central REST API.
+
