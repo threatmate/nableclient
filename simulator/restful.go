@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"reflect"
 	"strings"
-	"time"
 
 	"github.com/emicklei/go-restful/v3"
 	"github.com/threatmate/restfulwrapper"
@@ -64,16 +63,14 @@ func handleAuthentication(universe *Universe) func(builder *restful.RouteBuilder
 				apiKey := strings.TrimPrefix(authorization, "Bearer ")
 				slog.InfoContext(req.Request.Context(), "Found API key", "API Key", apiKey)
 				for _, apiUser := range universe.APIUsers {
-					for _, accessToken := range apiUser.accessTokens {
-						if accessToken.Token == apiKey && accessToken.ExpiresAt.After(time.Now()) {
-							slog.InfoContext(req.Request.Context(), "Found API user", "API User", apiUser.Username)
-							ctx := req.Request.Context()
-							ctx = context.WithValue(ctx, ContextKeyCurrentUser, &CurrentUser{
-								Username: apiUser.Username,
-							})
-							req.Request = req.Request.WithContext(ctx)
-							break
-						}
+					if apiUser.CheckAccessToken(apiKey) {
+						slog.InfoContext(req.Request.Context(), "Found API user", "API User", apiUser.Username)
+						ctx := req.Request.Context()
+						ctx = context.WithValue(ctx, ContextKeyCurrentUser, &CurrentUser{
+							Username: apiUser.Username,
+						})
+						req.Request = req.Request.WithContext(ctx)
+						break
 					}
 				}
 			}

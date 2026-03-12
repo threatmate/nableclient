@@ -27,6 +27,7 @@ type Device struct {
 	Asset  *ncentralclient.DeviceAsset
 }
 
+// APIUser is a user for the API.
 type APIUser struct {
 	Username      string
 	APIKey        string
@@ -35,12 +36,14 @@ type APIUser struct {
 	refreshTokens []APIUserToken
 }
 
+// APIUserToken is a token for the API user.
 type APIUserToken struct {
 	Token     string
 	Type      string
 	ExpiresAt time.Time
 }
 
+// AuthenticateAPIKey authenticates the API key and returns the access and refresh tokens.
 func (u *APIUser) AuthenticateAPIKey(apiKey string) (output ncentralclient.PostAuthAuthenticateResponse, err error) {
 	if apiKey != u.APIKey {
 		return output, fmt.Errorf("invalid API key")
@@ -74,4 +77,17 @@ func (u *APIUser) AuthenticateAPIKey(apiKey string) (output ncentralclient.PostA
 		ExpirySeconds: int(time.Until(refreshToken.ExpiresAt).Seconds()),
 	}
 	return output, nil
+}
+
+// CheckAccessToken checks if the access token is valid.
+func (u *APIUser) CheckAccessToken(token string) bool {
+	u.lock.Lock()
+	defer u.lock.Unlock()
+
+	for _, accessToken := range u.accessTokens {
+		if accessToken.Token == token && accessToken.ExpiresAt.After(time.Now()) {
+			return true
+		}
+	}
+	return false
 }
