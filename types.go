@@ -2,6 +2,7 @@ package ncentralclient
 
 import (
 	"encoding/json"
+	"fmt"
 	"time"
 )
 
@@ -28,7 +29,10 @@ type GenericPage[T any] struct {
 	Warning any `json:"_warning"`
 }
 
-const DateTimeFormat = "2006-01-02T15:04:05.999"
+var DateTimeFormats = []string{
+	"2006-01-02T15:04:05.999",
+	"2006-01-02T15:04:05.999-07:00",
+}
 
 type DateTime time.Time
 
@@ -37,14 +41,16 @@ func (d *DateTime) UnmarshalJSON(b []byte) error {
 	if err := json.Unmarshal(b, &stringValue); err != nil {
 		return err
 	}
-	timeValue, err := time.Parse(DateTimeFormat, stringValue)
-	if err != nil {
-		return err
+	for _, format := range DateTimeFormats {
+		timeValue, err := time.Parse(format, stringValue)
+		if err == nil {
+			*d = DateTime(timeValue)
+			return nil
+		}
 	}
-	*d = DateTime(timeValue)
-	return nil
+	return fmt.Errorf("could not parse as date time using %d formats: %s", len(DateTimeFormats), stringValue)
 }
 
 func (d DateTime) MarshalJSON() ([]byte, error) {
-	return json.Marshal(time.Time(d).Format(DateTimeFormat))
+	return json.Marshal(time.Time(d).Format(DateTimeFormats[0]))
 }
